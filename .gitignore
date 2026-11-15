@@ -1,0 +1,18 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+out/
+.env
+
+# 가사·음원은 재배포하지 않는다 (D6, SPEC 10.3)
+data/lyrics/
+data/audio/
+*.wav
+*.mp3
+*.flac
+*.m4a

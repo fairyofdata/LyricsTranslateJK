@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ltjk"
+version = "0.1.0"
+description = "Melody-aligned benchmark and automatic metrics for Japanese-Korean lyric adaptation"
+readme = "README.md"
+requires-python = ">=3.10"
+
+# 기본 경로(언어 분석 + 음열 격자 탐색 + 의미 필터)에 필요한 전부.
+# 성분을 조용히 빼고 돌아가는 모드는 두지 않는다 (DECISIONS.md D11).
+dependencies = [
+  # 언어 분석 — 형태소, 사전 lattice
+  "sudachipy>=0.6.8",
+  "sudachidict-core>=20240109",
+  "kiwipiepy>=0.17",
+  # 의미 유사도 (LaBSE), LM 점수
+  "sentence-transformers>=2.7",
+  "transformers>=4.40",
+  "torch>=2.2",
+  # 격자·통계
+  "numpy>=1.26",
+  "scipy>=1.12",
+]
+
+[project.optional-dependencies]
+# 선택 층 ① 선율 전사 (SPEC 3절). 음표 길이가 필요한 판정에만 쓴다.
+melody = [
+  "demucs>=4.0",
+  "torchcrepe>=0.0.23",
+  "librosa>=0.10",
+  "soundfile>=0.12",
+]
+# 선택 층 ② 합성-ASR (SPEC 7절). 발음 점수의 타당성 검증용.
+synth = ["faster-whisper>=1.0"]
+# IPA 변환 교차 검증. pyopenjtalk은 플랫폼에 따라 빌드가 까다로워 분리한다.
+g2p = ["g2pk2>=0.0.3", "pyopenjtalk>=0.3"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+ltjk = "ltjk.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
