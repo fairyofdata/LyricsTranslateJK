@@ -16,3 +16,8 @@ data/audio/
 *.mp3
 *.flac
 *.m4a
+
+# 표준 하네스 — 공개 레포라 로컬 전용 (지금 상태·로컬 메모·훅 설정)
+/state.md
+CLAUDE.local.md
+.claude/
