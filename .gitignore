@@ -21,3 +21,5 @@ data/audio/
 /state.md
 CLAUDE.local.md
 .claude/
+data/reports/
+data/ingest/
