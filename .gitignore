@@ -24,3 +24,7 @@ CLAUDE.local.md
 .claude/
 data/reports/
 data/ingest/
+
+# 개인 산출물 — 레포에 넣지 않는다(불가피하면 여기에, 로컬만)
+_private/
+*.private.*
