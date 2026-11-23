@@ -97,14 +97,16 @@ for sid in ["s001","s002","s003","s004","s005","s006","s007","s008","s009","s010
     n = len(uniq)
     ex  = 100*sum(1 for x in res if x == 0)/len(res) if res else 0
     w1  = 100*sum(1 for x in res if abs(x) <= 1)/len(res) if res else 0
-    ko  = sum(syl(x["text"]) for x in d["target"]["lines"])
+    # 제목·음절 수는 방향이 아니라 언어로 고른다 — ko2ja에서 뒤집히지 않게
+    KO, JA = (d["source"], d["target"]) if d["direction"] == "ko2ja" else (d["target"], d["source"])
+    ko  = sum(syl(x["text"]) for x in KO["lines"])
     print("%-6s %-24s %5d %5d %5.0f%% %5.0f%% %6d %6d  %s"
           % (sid, d["target"]["title"][:22], n, slotted, ex, w1,
              len(SINO[sid]), keeps,
              " ".join("%s=%d" % (k,v) for k,v in acts.most_common())))
     rows.append(dict(
-      song_id=sid, cover_id=d["cover_id"], title_ko=d["target"]["title"],
-      title_ja=d["source"]["title"], direction=d["direction"],
+      song_id=sid, cover_id=d["cover_id"], title_ko=KO["title"],
+      title_ja=JA["title"], direction=d["direction"],
       original_artist=d["source"]["artist"], cover_channel=META[sid]["cover_channel"],
       cover_url=META[sid]["cover_url"], cover_kind=d["target"].get("kind",""),
       line_count=n, syllable_total_ko=ko, mora_total_ja=mora_tot,
