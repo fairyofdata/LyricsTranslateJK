@@ -23,6 +23,7 @@
   README.md  docs/            기획·사양·결정·인계
   tools/                      분석 코드 (가사 없음)
   data/metadata.csv           곡별 해시·집계값만
+  data/labels/<id>_pairs.csv  지목 댓글 라벨 — 어절 쌍·모음/자음 열·지지 댓글 수 (본문·작성자 없음)
   data/candidates.md          공식 번안 조사 (가사 본문 없음)
   pyproject.toml  .gitignore
 
@@ -31,13 +32,14 @@ git 제외 (이 PC에만)
   data/lyrics/<id>.json       적재본 — 가사 전문이 들어 있다
   data/ingest/run*.py         적재 생성기 — 가사가 소스에 박혀 있다
   data/reports/<id>.md        검수 보고서 — 확인 필요 분절의 가사
+  data/comments/<id>_raw.txt  댓글 원본 (사용자 붙여넣기) — 작성자명·본문
 ```
 
 **커밋 전에 `data/`를 매번 확인한다.** `git status --short`에 `data/lyrics`·`data/ingest`·`data/reports`가 뜨면 `.gitignore`가 깨진 것이다.
 
 ## 3. 코퍼스
 
-12곡. 목록·수치는 `state.md`와 `data/metadata.csv`에, 곡별 분절 대조는 `data/reports/<id>.md`에 있다.
+14곡. 목록·수치는 `state.md`와 `data/metadata.csv`에, 곡별 분절 대조는 `data/reports/<id>.md`에 있다.
 
 적재본은 `data/lyrics/<id>.json` 하나가 정본이고, `data/ingest/run<id>.py`가 그것을 만든 생성기다. 생성기를 다시 돌리면 같은 JSON이 나온다 — 해시로 확인했다.
 
@@ -51,7 +53,10 @@ git 제외 (이 PC에만)
 - `source.lines[].gloss_ko` = **직역**. 불려지지 않으므로 슬롯 집계에 한 글자도 쓰지 않는다 (D41)
 - `segments[].obs` = 내가 손으로 판정한 관측 행위(`keep`/`sino`/`mimic`/`render`). 없는 분절은 미분류다
 - `repeat_of`는 **양쪽이 모두 반복일 때만** 쓰고 그때만 `unique_pairs`에서 뺀다. 한쪽만이면 `src_repeat_of`/`tgt_repeat_of`이고 분석에 남는다 (D40)
-- `slot_excluded: true` = 슬롯 집계에서 뺀다. 정렬 미확정·축약 전사 등
+- `slot_excluded: true` = 슬롯 집계에서 뺀다. 정렬 미확정·축약 전사·`keep` 등
+- `segments[].obs_parts` = 한 분절 안의 어절 단위 행위 목록. `obs`는 그중 대표 하나다
+- `target.lines[].listed_text` = 설명란 표기가 **불린 것과 다를 때** 설명란 쪽. `sung_as: "ja"`면 원어로 불렸다
+- `comments[]` = 지목 댓글 라벨. `comment_ns`는 `data/comments/`의 구조화 번호다
 
 ## 4. 절차 — 곡 하나 늘리기
 
@@ -77,6 +82,7 @@ git 제외 (이 PC에만)
 | `make_metadata.py` | `data/metadata.csv` 생성. 공유 음독 다리 목록이 여기 손으로 들어 있다 |
 | `make_reports.py` | `data/reports/*.md` 생성. 양방향 처리 |
 | `check_docs.py` | 문서의 표·펜스·상호 참조 검증 |
+| `comment_pairs.py` | 적재본의 `comments[]` → `data/labels/<id>_pairs.csv`. 모음·두음 거친 일치율 (phon 모듈이 아니다) |
 
 `check_docs.py`의 dangling `D5`·`D18`·`D20`·`D28`은 **거짓 양성**이다 — `X8`~`X11` 제목의 "구 Dxx" 과거 번호 표기이고 `DECISIONS` 머리의 규칙대로 의도된 것이다. 그 넷 외에 뜨면 실제 문제다.
 
@@ -100,16 +106,17 @@ ko2ja:  잔차 = 예측 − 한국어 음절
 - **백틱이 든 내용을 bash 인라인으로 쓰지 마라.** 명령 치환으로 먹힌다. 따옴표 heredoc(`<< 'PYEOF'`)이나 파일로 쓴다. 파이썬 문자열 안의 `\\`도 heredoc을 한 번 더 지난다
 - **방향을 타는 집계는 양쪽을 다 시험한다.** `make_metadata.py`가 한동안 ko2ja를 ja2ko 공식으로 세서 `metadata.csv`의 일치율이 1.00으로 들어가 있었다. 커밋 대상 파일이라 조용히 틀리면 오래 남는다
 - **곡 번호를 바꿨으면 생성기도 고친다.** `run002.py`가 번호 정정 전 `song_id`를 들고 있어서 다시 돌리면 다른 곡을 덮어쓸 상태였다
+- **설명란 가사가 불린 가사라고 믿지 마라.** `s001`의 설명란은 원어 그대로 부른 후렴 두 구절 자리에 한국어 뜻풀이를 적어 두었고, 그걸 번안으로 읽어 `keep`을 `sino`로 잘못 판정했다 — 다리 수가 두 배로 부풀었다. 사용자가 처음부터 "원어 그대로"라고 말했고 댓글도 그랬다. 직역과 번안이 겹치면(D41 점검) 먼저 의심한다
+- **사용자가 짚은 것은 적재 메모에 남긴다.** 위 착오는 사용자 설명이 적재본까지 오지 않아서 생겼다
 - **보고서는 필요한 만큼만 찍는다.** 처음엔 곡마다 원문·독음·직역·번안을 전곡 나란히 찍었는데, 검수에 필요한 건 다툼이 있는 분절이고 나머지는 상업 음원의 전문 사본을 한 벌 더 만드는 셈이었다. 지금은 가사 없는 요약표 + 확인 필요 분절만이다
 
 ## 6. 다음에 할 일
 
-순서와 완료 조건은 `state.md`의 「다음 작업」이 정본이다. 코퍼스 쪽으로 가장 급한 셋만 적는다.
+순서와 완료 조건은 `state.md`의 「다음 작업」이 정본이다. 코퍼스 쪽으로 가장 급한 것만 적는다. 같은 곡 복수 커버는 모으지 않는다(X12).
 
 | | 왜 |
 |---|---|
-| **같은 곡 복수 커버** | 0곡. RQ4가 이걸 전제한다. 선율·원문이 통제된 상태로 여러 전략이 찍힌다 |
-| **`s001`의 지목 댓글 채굴** | 댓글 약 1,540개를 사용자가 줬는데 아직 안 했다. `phon` 모수와 `θ_mimic` 하한의 유일한 신호다 (D10·D34·D38) |
+| **지목 댓글을 더 모으기** | `s001` 채굴 완료(2026-11-23) — 소리 쌍 7·keep 2. 7쌍으로는 `phon` 모수를 못 맞춘다. 다른 팬 커버의 댓글이 필요하다 (D10·D34·D38) |
 | **ko2ja 더 모으기** | 2곡. D1이 한→일을 먼저 완성한다 |
 
 코드를 쓰기 시작할 시점은 `PLAN 8`의 M1이고, **구현 착수는 사용자 승인 사항이다.** 지금까지는 기획과 코퍼스뿐이다.

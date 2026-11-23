@@ -1,0 +1,10 @@
+song_id,seg_id,kind,pair_src,pair_tgt,src_syll,tgt_syll,aligned,src_vowels,tgt_vowels,src_onsets,tgt_onsets,vowel_match,onset_match,line_final,n_comments
+s001,s001-g07,sound,瞳,외톨이,3,3,3,i-o-i,e-o-i,H-T-M,∅-T-∅,0.67,0.33,true,3
+s001,s001-g08,sound,だけど,탓해도,3,3,3,a-e-o,a-e-o,T-K-T,T-H-T,1.00,0.67,false,4
+s001,s001-g08,sound,いつか,이 순간,3,3,3,i-u-a,i-u-a,∅-C-K,∅-S-K,1.00,0.67,false,2
+s001,s001-g13,sound,ほとばしる,혹독함 위로,5,5,5,o-o-a-i-u,o-o-a-i-o,H-T-P-S-R,H-T-H-∅-R,0.80,0.60,false,1
+s001,s001-g13,sound,熱い,따스히,3,3,3,a-u-i,a-ɯ-i,∅-C-∅,T-S-H,1.00,0.00,false,2
+s001,s001-g14,sound,裏切るなら,운명을 날거라,6,6,6,u-a-i-u-a-a,u-ʌ-ɯ-a-ʌ-a,∅-R-K-R-N-R,∅-M-∅-N-K-R,0.33,0.33,true,2
+s001,s001-g20,sound,世界中の,시간이 주는,5,5,5,e-a-i-u-o,i-a-i-u-ɯ,S-K-∅-C-N,S-K-∅-C-N,0.60,1.00,false,1
+s001,s001-g11,keep,残酷な天使のテーゼ,(원어 그대로),,,,,,,,,,,9
+s001,s001-g16,keep,少年よ神話になれ,(원어 그대로),,,,,,,,,,,4

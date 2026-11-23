@@ -12,7 +12,8 @@ from corpus import morae, syl, latin_only, has_latin
 
 OUT = "data/reports"
 os.makedirs(OUT, exist_ok=True)
-IDS = ["s%03d" % i for i in range(1, 13)]
+# 적재본이 있는 곡 전부 — 번호 범위를 손으로 고치다 새 곡을 빠뜨리지 않게
+IDS = sorted(f[:-5] for f in os.listdir("data/lyrics") if __import__("re").fullmatch(r"s\d{3}\.json", f))
 SUMMARY = []
 
 def slots(doc, s, S, T):

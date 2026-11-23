@@ -78,7 +78,7 @@
 
 양방향 대응의 핵심 표. 중화 후 7종 받침(ㄱㄴㄷㄹㅁㅂㅇ)을 기준으로 한다.
 
-**이 표는 이제 예측이고, 검증 대상이다.** 동일 선율 양 언어 공식판 데이터에서 실제 대응 빈도를 재어 표의 비용값과 맞는지 본다 (PLAN.md 5절 RQ4).
+**이 표는 이제 예측이고, 검증 대상이다.** 동일 선율 양 언어 공식판 데이터에서 실제 대응 빈도를 재어 표의 비용값과 맞는지 본다 (PLAN.md 5절 RQ3).
 
 ### 2.1 한국어 받침 → 일본어
 
@@ -172,7 +172,7 @@
 
 ## 3. 선율 전사 파이프라인 (선택 층)
 
-기본 경로는 1.3의 템플릿 슬롯이다. 이 절은 음표 길이가 필요한 경우 — 지속시간 타당성, 합성-ASR 지표, RQ4의 음표길이별 음차율 분석 — 에만 쓴다. 악보가 없으므로 음원에서 슬롯 열을 만든다. 양 언어판을 각각 따로 전사한다.
+기본 경로는 1.3의 템플릿 슬롯이다. 이 절은 음표 길이가 필요한 경우 — 지속시간 타당성, 합성-ASR 지표 — 에만 쓴다. 악보가 없으므로 음원에서 슬롯 열을 만든다. 양 언어판을 각각 따로 전사한다.
 
 ```
 음원 → ① 보컬 분리 → ② F0 추적 → ③ 음표 분할 → ④ 음절 정렬 → ⑤ 슬롯 열
@@ -505,7 +505,6 @@ phon_score = 1 - (누적 자질 거리 / C(라인))
 - 사용자가 **구간** `[r_min, r_max]`를 지정하고 전선은 그 안에서만 계산된다. 기본값은 명시하고 고정한다
 - 축이자 제약이다 — `keep`은 `phon` 거리 0에 의미 보존 완전이므로, 묶지 않으면 **아무것도 번역하지 않는 것이 최적해**가 된다 (D31)
 - 가중치가 아니다. 무엇이 더 좋은지를 바꾸지 않고 **어느 영역을 볼지**를 바꾼다
-- 같은 곡 복수 커버의 번안율 분포가 RQ4의 측정 대상이다
 - **상한이 1.0이 아니다.** 원문이 이미 제3언어인 구간(8.4의 `keep` 방아쇠 둘)은 번역하면 안 되므로 번안율의 도달 가능 상한이 **곡마다 다르다.** `s003`은 43행 중 6행이 영어다 — 상한 약 0.86. `r_max`를 곡과 무관하게 1.0으로 두면 그 곡에서는 빈 영역을 탐색한다
 
 ### 6.8 보조 진단 (지표가 아니다)
@@ -850,13 +849,18 @@ segment_count, align_agreement, is_gold
 ```
 song_id · cover_id · direction · note
 source    { lang · title · artist · duration_sec · lines[ {id, section, text, reading?, gloss?} ] }
-target    { lang · title · artist · duration_sec · kind · lines[ {id, section, text} ] }
-segments  [ {seg_id, src[], tgt[], type, forced?, reason?, obs?,
+target    { lang · title · artist · duration_sec · kind · lines[ {id, section, text, listed_text?, sung_as?} ] }
+segments  [ {seg_id, src[], tgt[], type, forced?, reason?, obs?, obs_parts?,
               repeat_of?, src_repeat_of?, tgt_repeat_of?, slot_excluded?} ]
 unique_pairs[]    분석 대상 분절 — `repeat_of`(양쪽 모두 반복)만 뺀다 (D40)
 sino_observed[]   실제로 쓰인 공유 음독 다리.  sino_declined[]  있었는데 안 쓴 것
 is_gold           모범 사례인가 (D37)
-comments[]        지목 댓글 — {quote, pair_src, pair_tgt}  (선택)
+comments[]        지목 댓글 — {kind(sound|keep), seg_id, pair_src, pair_src_kana, pair_tgt, comment_ns[], quote}  (선택)
+```
+
+`text`는 **불린 것**이다. 설명란 표기가 다르면 `listed_text`에 두고, 원어로 불렸으면 `sung_as`에 그 언어를 적는다 — `s001`의 설명란은 원어로 부른 후렴 자리에 뜻풀이를 적어 두었다(D41). `obs_parts`는 분절 안의 어절 단위 행위 목록 `[{act, src, tgt}]`이고 `obs`는 그 대표값이다. `comments[].comment_ns`는 `data/comments/<id>_raw.txt`를 구조화한 번호로, 작성자는 담지 않는다.
+
+```
 provenance        {collected, collected_by, method, *_available}
 ```
 
@@ -981,8 +985,8 @@ provenance        {collected, collected_by, method, *_available}
 
 - `metadata.csv`에서 같은 `song_id`에 `cover_id`가 여럿이다 (10.1)
 - 각 커버의 (`phon`, `semantic_work`, 번안율)을 재면 **한 평면에 여러 사람의 선택이 찍힌다**
-- RQ4가 이걸 쓴다 — 어느 번안율이 지지받는가
-- 선정 조건: 곡당 커버 2개 이상을 우선하고, 최소 5곡은 복수 커버로 확보한다
+- ~~RQ4가 이걸 쓴다 — 어느 번안율이 지지받는가~~ RQ4는 범위 밖이다(DECISIONS X12). **일부러 모으지 않는다** — 우연히 생기면 같은 원문 항목에 다른 선택이 찍힌 쌍(`ユラユラ`→`유라유라`/`흔들흔들`처럼)이 `w_*` 추정에 쓰인다
+- ~~선정 조건: 곡당 커버 2개 이상을 우선하고, 최소 5곡은 복수 커버로 확보한다~~
 
 ### 11.3 분절과 라인 대응
 
@@ -1002,6 +1006,8 @@ provenance        {collected, collected_by, method, *_available}
 **좋아요 수는 쓸 수 없다** — 목소리·외모·편곡에 오염된다. 쓸 수 있는 것은 **특정 대응을 지목한 댓글**이고, 그것은 사람이 손으로 달아 준 "이 대응은 작동한다" 라벨이다.
 
 - `scripts/mine_comments.py`가 「원어 어절 → 번안 어절」 꼴을 추출하고 사람이 검수한다
+  - **지금(M0)은 반자동이다.** 후보를 화살표·가나·원문 독음의 한글 표기·번안 어휘 인용으로 거르고(`s001`: 772개 → 53개) 사람이 읽어 라벨을 단다. 특징 계산은 `tools/comment_pairs.py`
+  - 소리 쌍만이 아니라 **`keep` 지목**(「여기는 원어 그대로라 좋다」)도 라벨이다 — 상징성 방아쇠(8.4)의 사람 판정이다
 - 쓰임은 둘 — `phon` 모수(`w_v`·`w_c`·`w_f`, 6.7)를 맞추는 신호, `θ_mimic`(8.4)의 하한 추정
 - 저장은 **추상 특징만** — 어절 쌍의 IPA, 자질 거리, 슬롯 수. 댓글 본문과 작성자는 담지 않는다
 
