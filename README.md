@@ -1,95 +1,105 @@
+<!-- Source: README_KR.md (Korean is the source; English and Japanese are translations) · synced 2026-11-24 -->
+
 # LyricsTranslateJK
 
-**소리를 지키는 일본어↔한국어 가사 번안 도구.**
+[English](README.md) · [한국어](README_KR.md) · [日本語](README_JP.md)
 
-원곡과 같은 소리로 들리면서 작품으로서 말이 되는 가사를 찾는다. 번역이 아니라 번안이고, 같은 선율에 얹혀야 하므로 음절·모라 수가 하드 제약으로 걸린다.
+**A Japanese↔Korean lyric adaptation tool that keeps the sound.**
+
+It looks for lyrics that sound like the original and still make sense as a work. This is adaptation, not translation: the words have to sit on the same melody, so syllable and mora counts are hard constraints.
 
 ```
-제약    하드 제약        음절·모라 수가 슬롯 구간에 맞는가   ← 못 맞추면 후보가 아니다
-축 1    phon             원곡 소리와 얼마나 가까운가
-축 2    semantic_work    작품의 세계·주제와 정합한가
-손잡이  번안율            몇 %를 실제로 목표 언어로 옮기는가
-진단    semantic_line    그 라인에 얼마나 충실한가
+constraint  hard constraint  syllable/mora count fits the slot range   ← if not, it is not a candidate
+axis 1      phon             how close to the sound of the original
+axis 2      semantic_work    fits the world and theme of the work
+knob        adaptation rate  what % is actually moved into the target language
+diagnostic  semantic_line    how faithful to that particular line
 ```
 
-가중합이 없고 의미 하한선도 없다. **파레토 전선과 손잡이가 그 일을 한다.**
+There is no weighted sum and no meaning floor. **The Pareto front and the knob do that job.**
 
-## 현재 상태
+## Status
 
-**기획 단계.** 구현은 시작하지 않았다. 레퍼런스 코퍼스 14곡(ja2ko 12 · ko2ja 2)이 로컬에 적재되어 있고(본문은 비공개, D6), 그 열두 곡이 분기점 A·B의 1차 답을 줬다 — [D39](docs/DECISIONS.md).
+**Planning stage.** Implementation has not started. A reference corpus of 14 songs (ja2ko 12 · ko2ja 2) is loaded locally (texts are not published, D6), and those twelve songs gave first answers to branch points A and B — [D39](docs/DECISIONS.md).
 
-| 문서 | 내용 |
+| Document | Contents |
 |---|---|
-| [docs/DIGEST.md](docs/DIGEST.md) | **한 장 요약** — 철학·축·상수·미검증 가정. 먼저 읽는다 |
-| [docs/PLAN.md](docs/PLAN.md) | 철학, 시스템 구조, 평가, 연구 질문, 데이터, 일정, 리스크 |
-| [docs/SPEC.md](docs/SPEC.md) | 슬롯 표현, 전이표(받침·漢字·入聲), 음운·IPA, 지표, 생성, 코퍼스 |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | 확정된 결정 38개와 뒤집은 결정 11개 |
-| [docs/INTAKE.md](docs/INTAKE.md) | **수집 규격** — 가사를 어떤 형식으로 모아 주면 되는가 |
-| [docs/HANDOFF.md](docs/HANDOFF.md) | **인계** — 저장소 구조, 코퍼스 늘리는 절차, 빠지기 쉬운 함정 |
-| [tools/](tools/) | 적재·집계 코드. 가사는 들어 있지 않다 |
+| [docs/DIGEST.md](docs/DIGEST.md) | **One-page summary** — philosophy, axes, constants, unverified assumptions. Read this first |
+| [docs/PLAN.md](docs/PLAN.md) | Philosophy, system structure, evaluation, research questions, data, schedule, risks |
+| [docs/SPEC.md](docs/SPEC.md) | Slot representation, transfer tables (batchim, kanji, entering tone), phonology and IPA, metrics, generation, corpus |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | 38 settled decisions and 11 reversed ones |
+| [docs/INTAKE.md](docs/INTAKE.md) | **Intake format** — how lyrics should be collected |
+| [docs/HANDOFF.md](docs/HANDOFF.md) | **Handover** — repository layout, how to grow the corpus, common pitfalls |
+| [tools/](tools/) | Loading and aggregation code. No lyrics inside |
 
-가사·음원·선율·댓글 본문은 재배포하지 않는다(D6). 공개하는 것은 코드·규칙표·거리 함수·추상 특징·해시·평가 스크립트다. 적재본은 `data/lyrics/`에 로컬로만 둔다.
+Lyrics, audio, melodies and comment texts are not redistributed (D6). What is published: code, rule tables, distance functions, abstract features, hashes and evaluation scripts. The loaded texts stay local in `data/lyrics/`.
 
-## 철학
+(The detailed documents under `docs/` are in Korean.)
 
-| | 원칙 |
+## Philosophy
+
+| | Principle |
 |---|---|
-| 1 | 소리가 먼저 귀에 닿는다 |
-| 2 | **의미는 작품에 봉사하고 라인에 봉사하지 않는다** |
-| 3 | 공짜가 있으면 받는다 — 소리와 뜻이 겹치면 탐색하지 않고 조회한다 |
-| 4 | 대체 불가능한 것은 건드리지 않는다 |
-| 5 | **억지로 끼워 맞추지 않는다** — 나쁜 음차는 음차하지 않은 것보다 나쁘다 |
+| 1 | Sound reaches the ear first |
+| 2 | **Meaning serves the work, not the line** |
+| 3 | Take what is free — where sound and meaning overlap, look it up instead of searching |
+| 4 | Do not touch what cannot be replaced |
+| 5 | **Do not force a fit** — a bad sound-alike is worse than none |
 
-## 왜 일↔한인가
+## Why Japanese↔Korean
 
-공유 자원이 셋이다. **음소** [ɯ]·[ɕ]·[tɕ]·[ɾ]·[ŋ] — 특히 비원순 고모음 [ɯ](일 `ウ`, 한 `ㅡ`)는 영어·중국어 상대로는 대응물이 없다. **음절 구조** — 받침과 특수모라(ン·ッ·ー)가 서로 대응 경로를 갖는다. 그리고 **어휘** — 漢字語와 서구 차용어에서 두 언어는 같은 글자를 각자의 음으로 읽는다.
+The two languages share three resources. **Phonemes** [ɯ]·[ɕ]·[tɕ]·[ɾ]·[ŋ] — the unrounded high vowel [ɯ] (Japanese `ウ`, Korean `ㅡ`) in particular has no counterpart against English or Chinese. **Syllable structure** — final consonants (batchim) and the special morae (ン·ッ·ー) have paths to each other. And **vocabulary** — in Sino-Japanese/Sino-Korean words and Western loanwords, both languages read the same characters with their own sounds.
 
-세 번째가 핵심이다. `残酷`는 ざんこく이고 잔혹이다 — **소리와 뜻을 동시에 가진다.** 거기서는 상충이 없고, 탐색이 아니라 사전 조회로 끝난다.
+The third is the key. `残酷` is *zankoku* and *janhok* — **it carries sound and meaning at once.** There is no trade-off there; a dictionary lookup settles it, no search needed.
 
-## 네 가지 방출 행위
+## Four emission actions
 
-라인을 어절로 쪼개고 각 구간에 하나를 배정한다. **배정의 조합이 스펙트럼이다.**
+A line is split into word units and each span gets one action. **The combination of assignments is the spectrum.**
 
-| | 하는 일 |
+| | What it does |
 |---|---|
-| `keep` | 원어 그대로 둔다 — 상징성이 대체 불가능한 자리 |
-| `sino` | 같은 漢字를 목표 언어 음으로 읽는다 |
-| `mimic` | 음열 격자로 소리를 근사한다 |
-| `render` | 뜻 중심으로 생성해 슬롯에 맞춘다 |
+| `keep` | Leave the original word as is — where its symbolism cannot be replaced |
+| `sino` | Read the same kanji with the target language's sound |
+| `mimic` | Approximate the sound on a phoneme lattice |
+| `render` | Generate from meaning and fit it to the slot |
 
-배분의 사전 분포는 운율이 아니라 **형태론**이다 — 漢字語는 `sino`·`keep`, 和語 내용어는 `mimic`·`render`, 문법형태소는 `render`(각 언어 문법이 강제한다).
+The prior over assignments comes from **morphology**, not prosody — Sino words lean to `sino`·`keep`, native content words to `mimic`·`render`, grammatical morphemes to `render` (each language's grammar forces it).
 
-## LLM에게 시키면 안 되는 이유
+## Why an LLM cannot simply do this
 
-"발음 비슷하게 번안해줘"는 LLM이 못 한다. **자기가 낸 결과의 음소열을 재지 못하기 때문이다.** 토큰을 뱉을 때 IPA를 계산하지 않으므로 발음 유사도를 목표로 삼을 수가 없다.
+An LLM cannot "adapt this so it sounds similar". **It cannot measure the phoneme sequence of its own output.** It does not compute IPA while emitting tokens, so it cannot aim at phonetic similarity.
 
-그래서 순서를 뒤집는다 — 번역한 뒤 발음을 보지 않고, **소리를 깔고 그 위에서 말이 되는 것을 찾는다.** LLM은 `render` 생성기와 교정기로만 쓴다.
+So the order is reversed — instead of translating and then checking the sound, **lay down the sound first and find what makes sense on top of it.** The LLM is used only as the `render` generator and as a corrector.
 
 ```
-원문 라인 + 작품 맥락 + 번안율 구간
-  ├─① 음운 분석 → IPA
-  ├─② 슬롯 템플릿 추출            음절·모라 수 구간
-  ├─③ 형태 유형 분류 → 배분 후보
-  ├─④ 행위별 생성                 조회 / 격자 / LLM 표본
-  ├─⑤ 격자 → 단어열 해석          사전 lattice + 다목적 빔   ★ 핵심 난관
-  ├─⑥ LLM 교정 → 제약 재검사       깨면 버린다 (닫힌 루프)
-  └─⑦ 파레토 전선 + 앵커 + 무릎
+source line + work context + adaptation-rate range
+  ├─① phonological analysis → IPA
+  ├─② slot template extraction        syllable/mora count range
+  ├─③ morphological type → assignment candidates
+  ├─④ generation per action           lookup / lattice / LLM samples
+  ├─⑤ lattice → word sequence         dictionary lattice + multi-objective beam   ★ the hard part
+  ├─⑥ LLM correction → re-check       drop anything that breaks a constraint (closed loop)
+  └─⑦ Pareto front + anchors + knee
 ```
 
-## 출력은 정답 하나가 아니다
+## The output is not a single answer
 
-두 축은 실제로 상충한다. 어디서 타협할지는 곡과 용도에 따라 다르고 도구가 알 수 없으므로, 후보 N개를 세 값과 함께 내놓는다.
+The two axes really do conflict. Where to compromise depends on the song and the use, which the tool cannot know, so it returns N candidates with their three values.
 
-좌표계는 레퍼런스가 아니라 **계산된 앵커**가 세운다 — 음차 상한(가능한 최대 소리 유사도), MT 상한(소리를 포기하면 얻는 의미), 원어 유지(번안율 0). 모든 라인에서 계산되므로 레퍼런스가 없는 실제 사용 상황에서도 선다. 기본 제시점은 **전선의 무릎**이고 손 상수가 없다.
+The coordinate system is set by **computed anchors**, not by a reference — the sound-alike ceiling (the highest possible sound similarity), the MT ceiling (the meaning you get by giving up sound), and keeping the original (adaptation rate 0). They are computed for every line, so they stand even in real use where there is no reference. The default pick is the **knee of the front**, with no hand-set constants.
 
-## 음원이 필요 없다
+## No audio needed
 
-기본 경로는 원문 가사에서 유도한 음절·모라 수 템플릿으로 동작한다. 음원 전사와 합성-ASR 평가는 **선택 층**이다.
+The default path works from syllable/mora templates derived from the source lyrics. Audio transcription and synthesis-plus-ASR evaluation are **optional layers**.
 
-## 데이터
+## Data
 
-학습 데이터가 필요 없다. 쌍으로 학습하지 않고 음운 규칙·사전·거리 함수로 탐색하며 사전 훈련된 공개 모델만 쓴다.
+No training data is needed. Nothing is learned from pairs; the search runs on phonological rules, dictionaries and distance functions, and only public pretrained models are used.
 
-레퍼런스는 **팬 커버**다 — 공식 번안가는 발음 우선 번안을 시도한 적이 없어 구성이 맞지 않는다. 팬 커버는 원곡 음원에 얹어 부르므로 선율이 정의상 동일하고, 같은 곡에 지향이 다른 커버가 여럿 있어 스펙트럼의 여러 점을 준다. 그리고 **특정 대응을 지목한 댓글**이 "이 대응은 작동한다"의 사람 라벨이 된다.
+The references are **fan covers** — professional adapters have never attempted sound-first adaptation, so their work does not fit the setup. Fan covers are sung over the original audio, so the melody is identical by definition, and one song often has several covers with different aims, giving several points on the spectrum. **Comments that point at a specific correspondence** become human labels for "this correspondence works".
 
-가사·음원·선율·댓글 본문은 재배포하지 않는다. 공개하는 것은 코드·규칙표·거리 함수·추상 특징·해시·평가 스크립트다.
+Lyrics, audio, melodies and comment texts are not redistributed. What is published: code, rule tables, distance functions, abstract features, hashes and evaluation scripts.
+
+## License
+
+Code: [MIT](LICENSE). Lyrics and other third-party material quoted in analysis belong to their rights holders and are not covered by this license.
