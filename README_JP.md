@@ -1,6 +1,6 @@
 <!-- 原本: README_KR.md（韓国語版が原本、英語・日本語は翻訳） · 同期: 2026-11-24 -->
 
-# LyricsTranslateJK
+# Lyrics4JPKR
 
 [English](README.md) · [한국어](README_KR.md) · [日本語](README_JP.md)
 

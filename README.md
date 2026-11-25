@@ -1,6 +1,6 @@
 <!-- Source: README_KR.md (Korean is the source; English and Japanese are translations) · synced 2026-11-24 -->
 
-# LyricsTranslateJK
+# Lyrics4JPKR
 
 [English](README.md) · [한국어](README_KR.md) · [日本語](README_JP.md)
 
