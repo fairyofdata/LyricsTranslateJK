@@ -20,14 +20,14 @@ There is no weighted sum and no meaning floor. **The Pareto front and the knob d
 
 ## Status
 
-**Planning stage.** Implementation has not started. A reference corpus of 14 songs (ja2ko 12 · ko2ja 2) is loaded locally (texts are not published, D6), and those twelve songs gave first answers to branch points A and B — [D39](docs/DECISIONS.md).
+**Planning stage.** Implementation has not started. A reference corpus of 14 songs (ja2ko 12 · ko2ja 2) is loaded locally (texts are not published, D6), and those twelve songs gave first answers to branch points A and B — [D39](docs/adr/0039-hard-constraints-genre-first-measurement.md).
 
 | Document | Contents |
 |---|---|
 | [docs/DIGEST.md](docs/DIGEST.md) | **One-page summary** — philosophy, axes, constants, unverified assumptions. Read this first |
 | [docs/PLAN.md](docs/PLAN.md) | Philosophy, system structure, evaluation, research questions, data, schedule, risks |
 | [docs/SPEC.md](docs/SPEC.md) | Slot representation, transfer tables (batchim, kanji, entering tone), phonology and IPA, metrics, generation, corpus |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | 38 settled decisions and 11 reversed ones |
+| [docs/adr/](docs/adr/README.md) | 38 settled decisions and 11 reversed ones |
 | [docs/INTAKE.md](docs/INTAKE.md) | **Intake format** — how lyrics should be collected |
 | [docs/HANDOFF.md](docs/HANDOFF.md) | **Handover** — repository layout, how to grow the corpus, common pitfalls |
 | [tools/](tools/) | Loading and aggregation code. No lyrics inside |

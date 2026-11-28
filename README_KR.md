@@ -20,14 +20,14 @@
 
 ## 현재 상태
 
-**기획 단계.** 구현은 시작하지 않았다. 레퍼런스 코퍼스 14곡(ja2ko 12 · ko2ja 2)이 로컬에 적재되어 있고(본문은 비공개, D6), 그 열두 곡이 분기점 A·B의 1차 답을 줬다 — [D39](docs/DECISIONS.md).
+**기획 단계.** 구현은 시작하지 않았다. 레퍼런스 코퍼스 14곡(ja2ko 12 · ko2ja 2)이 로컬에 적재되어 있고(본문은 비공개, D6), 그 열두 곡이 분기점 A·B의 1차 답을 줬다 — [D39](docs/adr/0039-hard-constraints-genre-first-measurement.md).
 
 | 문서 | 내용 |
 |---|---|
 | [docs/DIGEST.md](docs/DIGEST.md) | **한 장 요약** — 철학·축·상수·미검증 가정. 먼저 읽는다 |
 | [docs/PLAN.md](docs/PLAN.md) | 철학, 시스템 구조, 평가, 연구 질문, 데이터, 일정, 리스크 |
 | [docs/SPEC.md](docs/SPEC.md) | 슬롯 표현, 전이표(받침·漢字·入聲), 음운·IPA, 지표, 생성, 코퍼스 |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | 확정된 결정 38개와 뒤집은 결정 11개 |
+| [docs/adr/](docs/adr/README.md) | 확정된 결정 38개와 뒤집은 결정 11개 |
 | [docs/INTAKE.md](docs/INTAKE.md) | **수집 규격** — 가사를 어떤 형식으로 모아 주면 되는가 |
 | [docs/HANDOFF.md](docs/HANDOFF.md) | **인계** — 저장소 구조, 코퍼스 늘리는 절차, 빠지기 쉬운 함정 |
 | [tools/](tools/) | 적재·집계 코드. 가사는 들어 있지 않다 |

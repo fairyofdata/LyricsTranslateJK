@@ -8,11 +8,11 @@
 |---|---|
 | 1 | `state.md` — 지금 어디까지 왔는가 (자동으로 읽힌다) |
 | 2 | `docs/DIGEST.md` — 한 장 요약. 우선순위·상수·미검증 가정 |
-| 3 | `docs/DECISIONS.md` — 현행 결정 D1~D42, 뒤집은 결정 X1~X11 |
+| 3 | `docs/adr/` — 현행 결정 D1~D42, 뒤집은 결정 X1~X11 |
 | 4 | 이 문서 — 코퍼스를 만지거나 늘릴 때 |
 | 5 | `docs/SPEC.md` · `docs/PLAN.md` — 세부 사양과 계획 |
 
-설계 질문의 정본은 `DIGEST`·`DECISIONS`다. 어긋나면 그쪽이 맞다.
+설계 질문의 정본은 `DIGEST`·`docs/adr`다. 어긋나면 그쪽이 맞다.
 
 ## 2. 무엇이 커밋되고 무엇이 로컬인가
 
@@ -68,7 +68,7 @@ git 제외 (이 PC에만)
 3. tools/make_metadata.py 의 SINO·DECLINED·META 에 그 곡을 추가한다
 4. python -I tools/make_metadata.py      data/metadata.csv 재생성
 5. python -I tools/make_reports.py       data/reports/*.md 재생성
-6. 설계에 반영할 것이 있으면 DECISIONS·SPEC·DIGEST, 그리고 state.md
+6. 설계에 반영할 것이 있으면 docs/adr·SPEC·DIGEST, 그리고 state.md
 ```
 
 모두 **저장소 루트에서** 실행한다(상대 경로를 쓴다). `python -I`로 돌린다 — `data/` 안의 스크립트가 그 디렉터리에서 모듈을 끌어오지 않게 한다.
@@ -84,7 +84,7 @@ git 제외 (이 PC에만)
 | `check_docs.py` | 문서의 표·펜스·상호 참조 검증 |
 | `comment_pairs.py` | 적재본의 `comments[]` → `data/labels/<id>_pairs.csv`. 모음·두음 거친 일치율 (phon 모듈이 아니다) |
 
-`check_docs.py`의 dangling `D5`·`D18`·`D20`·`D28`은 **거짓 양성**이다 — `X8`~`X11` 제목의 "구 Dxx" 과거 번호 표기이고 `DECISIONS` 머리의 규칙대로 의도된 것이다. 그 넷 외에 뜨면 실제 문제다.
+`check_docs.py`의 dangling `D5`·`D18`·`D20`·`D28`은 **거짓 양성**이다 — `X8`~`X11` 제목의 "구 Dxx" 과거 번호 표기이고 `docs/adr/README.md` 머리의 규칙대로 의도된 것이다. 그 넷 외에 뜨면 실제 문제다.
 
 ### 잔차의 정의
 

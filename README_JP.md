@@ -20,14 +20,14 @@
 
 ## 現状
 
-**企画段階。** 実装はまだ始めていません。参照コーパス 14 曲（ja2ko 12 · ko2ja 2）がローカルに読み込まれており（本文は非公開、D6）、その 12 曲が分岐点 A・B への最初の答えを出しました — [D39](docs/DECISIONS.md)。
+**企画段階。** 実装はまだ始めていません。参照コーパス 14 曲（ja2ko 12 · ko2ja 2）がローカルに読み込まれており（本文は非公開、D6）、その 12 曲が分岐点 A・B への最初の答えを出しました — [D39](docs/adr/0039-hard-constraints-genre-first-measurement.md)。
 
 | 文書 | 内容 |
 |---|---|
 | [docs/DIGEST.md](docs/DIGEST.md) | **一枚の要約** — 哲学・軸・定数・未検証の仮定。最初に読む |
 | [docs/PLAN.md](docs/PLAN.md) | 哲学、システム構成、評価、研究課題、データ、日程、リスク |
 | [docs/SPEC.md](docs/SPEC.md) | スロット表現、遷移表（パッチム・漢字・入声）、音韻・IPA、指標、生成、コーパス |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | 確定した決定 38 件と覆した決定 11 件 |
+| [docs/adr/](docs/adr/README.md) | 確定した決定 38 件と覆した決定 11 件 |
 | [docs/INTAKE.md](docs/INTAKE.md) | **収集規格** — 歌詞をどの形式で集めればよいか |
 | [docs/HANDOFF.md](docs/HANDOFF.md) | **引き継ぎ** — リポジトリ構成、コーパスを増やす手順、陥りやすい落とし穴 |
 | [tools/](tools/) | 読み込み・集計コード。歌詞は含まない |

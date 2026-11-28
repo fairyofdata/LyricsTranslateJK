@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 # 기본 경로(언어 분석 + 음열 격자 탐색 + 의미 필터)에 필요한 전부.
-# 성분을 조용히 빼고 돌아가는 모드는 두지 않는다 (DECISIONS.md D11).
+# 성분을 조용히 빼고 돌아가는 모드는 두지 않는다 (docs/adr D11).
 dependencies = [
   # 언어 분석 — 형태소, 사전 lattice
   "sudachipy>=0.6.8",
