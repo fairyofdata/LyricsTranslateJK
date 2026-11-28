@@ -1,6 +1,6 @@
 # 0011. (D11) 언어 자원과 신경망 모델은 모두 필수 의존성
 
-- 상태: 채택
+- 상태: 채택 · 기록 2026-11-15(git 기준 — 결정일은 기록에 없음)
 
 SudachiPy·Kiwi·sentence-transformers·torch·transformers. 성분을 빼고 돌아가는 모드를 두지 않고, 자원이 없으면 즉시 실패한다. `ltjk doctor`가 설치와 모델 캐시를 점검하고 **리비전 해시를 기록**한다.
 
